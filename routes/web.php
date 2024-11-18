@@ -20,8 +20,8 @@ Route::middleware('auth')->group(function () {
 });
 
 //send anything from /chirps to chirpController clas but only store and index
-Route::resource('chirps', ChirpController::class)
-    ->only(['index', 'store'])
+Route::resource('chirps', ChirpController::class) //assumes CRUD (generates 7 routes)
+    ->only(['index', 'store', 'edit', 'update', 'destroy', 'show'])
     ->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';

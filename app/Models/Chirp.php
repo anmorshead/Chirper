@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Chirp extends Model
 {
     public $fillable = [ 'message' ];
-    public function user(): BelongsTo
+
+    public function user(): BelongsTo //foreign key
     {
         return $this->belongsTo('App\Models\User');
     }
