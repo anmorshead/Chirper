@@ -26,7 +26,7 @@ Route::resource('chirps', ChirpController::class) //assumes CRUD (generates 7 ro
     ->middleware(['auth', 'verified']);
 
 //routes for likes (not resource route cause not CRUD)
-Route::post('/chirps/{chirp}/like', [LikeController::class, 'store'])->middleware(['auth', 'verified']);
-Route::delete('/chirps/{chirp}/like', [LikeController::class, 'destroy'])->middleware(['auth', 'verified']);
+Route::post('/chirps/{chirp}/like', [LikeController::class, 'store'])->middleware(['auth', 'verified'])->name('chirps.like');
+Route::delete('/chirps/{chirp}/like', [LikeController::class, 'destroy'])->middleware(['auth', 'verified'])->name('chirps.unlike');
 
 require __DIR__.'/auth.php';

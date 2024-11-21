@@ -54,6 +54,25 @@
                             @endif
                         </div>
                         <p class="mt-4 text-lg text-gray-900">{{ $chirp->message }}</p>
+                        {{--Likes--}}
+                        <div class="chirp">
+                            <p>{{ $chirp->content }}</p>
+                            <div>
+                                @if ($chirp->likes->contains('user_id', auth()->id()))
+                                    <form method="POST" action="{{ route('chirps.unlike', $chirp) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit">Unlike</button>
+                                    </form>
+                                @else
+                                    <form method="POST" action="{{ route('chirps.like', $chirp) }}">
+                                        @csrf
+                                        <button type="submit">Like</button>
+                                    </form>
+                                @endif
+                                <span>{{ $chirp->likes->count() }} Likes</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             @endforeach
