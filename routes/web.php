@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChirpController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,9 +20,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-//send anything from /chirps to chirpController clas but only store and index
+//send anything from /chirps to chirpController clas
 Route::resource('chirps', ChirpController::class) //assumes CRUD (generates 7 routes)
     ->only(['index', 'store', 'edit', 'update', 'destroy', 'show'])
     ->middleware(['auth', 'verified']);
+
+//routes for likes (not resource route cause not CRUD)
+Route::post('/chirps/{chirp}/like', [LikeController::class, 'store'])->middleware(['auth', 'verified']);
+Route::delete('/chirps/{chirp}/like', [LikeController::class, 'destroy'])->middleware(['auth', 'verified']);
 
 require __DIR__.'/auth.php';
