@@ -76,7 +76,7 @@
             @endforeach
         </div>
     </div>
-    {{-- Add JavaScript --}}
+    {{-- JavaScript for AJAX --}}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const likeButtons = document.querySelectorAll('.like-button');
