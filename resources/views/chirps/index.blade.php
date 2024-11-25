@@ -56,27 +56,73 @@
                         <p class="mt-4 text-lg text-gray-900">{{ $chirp->message }}</p>
 
                         {{--Likes--}}
-                        <div class="chirp">
-                            <p>{{ $chirp->content }}</p>
+                        <div id="chirp-{{ $chirp->id }}" class="chirp">
                             <div>
-                                @if ($chirp->likes->contains('user_id', auth()->id()))
-                                    <form method="POST" action="{{ route('chirps.unlike', $chirp) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"><img src="{{asset('unlike.png')}}" alt="unlike" class="h-6 w-6"></button>
-                                    </form>
-                                @else
-                                    <form method="POST" action="{{ route('chirps.like', $chirp) }}">
-                                        @csrf
-                                        <button type="submit"><img src="{{asset('like.png')}}" alt="like" class="h-6 w-6"></button>
-                                    </form>
-                                @endif
-                                <span>{{ $chirp->likes->count() }} Likes</span>
+                                <button
+                                    class="like-button"
+                                    data-chirp-id="{{ $chirp->id }}"
+                                    data-liked="{{ $chirp->likes->contains('user_id', auth()->id()) ? 'true' : 'false' }}">
+                                    <img
+                                        src="{{ $chirp->likes->contains('user_id', auth()->id()) ? asset('unlike.png') : asset('like.png') }}"
+                                        alt="Like/Unlike"
+                                        class="h-6 w-6">
+                                </button>
+                                <span id="like-count-{{ $chirp->id }}">{{ $chirp->likes->count() }} Likes</span>
                             </div>
                         </div>
+
                     </div>
                 </div>
             @endforeach
         </div>
     </div>
+    {{-- Add JavaScript --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const likeButtons = document.querySelectorAll('.like-button');
+
+            likeButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const chirpId = button.getAttribute('data-chirp-id');
+                    const isLiked = button.getAttribute('data-liked') === 'true';
+
+                    // Define endpoint and method
+                    const url = `/chirps/${chirpId}/like`;
+                    const method = isLiked ? 'DELETE' : 'POST';
+
+                    try {
+                        // Send AJAX request
+                        const response = await fetch(url, {
+                            method: method,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            },
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+
+                            // Update the like count and button
+                            const likeCount = document.querySelector(`#like-count-${chirpId}`);
+                            likeCount.textContent = `${data.likeCount} Likes`;
+
+                            const img = button.querySelector('img');
+                            if (isLiked) {
+                                img.src = '{{ asset("like.png") }}';
+                                button.setAttribute('data-liked', 'false');
+                            } else {
+                                img.src = '{{ asset("unlike.png") }}';
+                                button.setAttribute('data-liked', 'true');
+                            }
+                        } else {
+                            console.error('Error toggling like:', response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
 </x-app-layout>
