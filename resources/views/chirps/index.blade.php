@@ -54,6 +54,7 @@
                             @endif
                         </div>
                         <p class="mt-4 text-lg text-gray-900">{{ $chirp->message }}</p>
+
                         {{--Likes--}}
                         <div class="chirp">
                             <p>{{ $chirp->content }}</p>
@@ -62,12 +63,12 @@
                                     <form method="POST" action="{{ route('chirps.unlike', $chirp) }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit">Unlike</button>
+                                        <button type="submit"><img src="{{asset('unlike.png')}}" alt="unlike" class="h-6 w-6"></button>
                                     </form>
                                 @else
                                     <form method="POST" action="{{ route('chirps.like', $chirp) }}">
                                         @csrf
-                                        <button type="submit">Like</button>
+                                        <button type="submit"><img src="{{asset('like.png')}}" alt="like" class="h-6 w-6"></button>
                                     </form>
                                 @endif
                                 <span>{{ $chirp->likes->count() }} Likes</span>
