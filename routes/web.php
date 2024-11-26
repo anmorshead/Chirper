@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChirpController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -28,5 +29,9 @@ Route::resource('chirps', ChirpController::class) //assumes CRUD (generates 7 ro
 //routes for likes (not resource route cause not CRUD)
 Route::post('/chirps/{chirp}/like', [LikeController::class, 'store'])->middleware(['auth', 'verified'])->name('chirps.like');
 Route::delete('/chirps/{chirp}/like', [LikeController::class, 'destroy'])->middleware(['auth', 'verified'])->name('chirps.unlike');
+
+//route for comments
+Route::post('/chirps/{chirp}/comments', [CommentController::class, 'store'])->middleware(['auth', 'verified'])->name('chirps.comment');
+
 
 require __DIR__.'/auth.php';

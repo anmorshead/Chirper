@@ -20,11 +20,17 @@ class Chirp extends Model
         return $this->belongsTo('App\Models\User');
     }
 
-    //Update the Chirp model:
-    //Add a likes() method to define a one-to-many relationship with the Like model.
-
+    //Add a likes() method to define a one-to-many relationship with the Like model
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
     }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+
+
 }

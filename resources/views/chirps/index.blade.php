@@ -55,6 +55,30 @@
                         </div>
                         <p class="mt-4 text-lg text-gray-900">{{ $chirp->message }}</p>
 
+                        {{-- Comments Section --}}
+                        <div class="mt-4">
+                            <h3 class="text-sm font-bold">Comments:</h3>
+                            @foreach ($chirp->comments as $comment)
+                                <div class="mt-2">
+                                    <span class="font-semibold">{{ $comment->user->name }}:</span>
+                                    <span>{{ $comment->content }}</span>
+                                    <small class="text-gray-600">({{ $comment->created_at->diffForHumans() }})</small>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Add a Comment --}}
+                        <form method="POST" action="{{ url('/chirps/' . $chirp->id . '/comments') }}" class="mt-4">
+                            @csrf
+                            <textarea
+                                name="content"
+                                placeholder="Write a comment..."
+                                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                                required
+                            ></textarea>
+                            <x-primary-button class="mt-2">{{ __('Comment') }}</x-primary-button>
+                        </form>
+
                         {{--Likes--}}
                         <div id="chirp-{{ $chirp->id }}" class="chirp">
                             <div>
