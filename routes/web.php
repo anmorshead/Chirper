@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\ChirpController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
@@ -32,6 +33,13 @@ Route::delete('/chirps/{chirp}/like', [LikeController::class, 'destroy'])->middl
 
 //route for comments
 Route::post('/chirps/{chirp}/comments', [CommentController::class, 'store'])->middleware(['auth', 'verified'])->name('chirps.comment');
+
+//routes for bookmarking
+Route::post('/chirps/{chirp}/bookmark', [BookmarkController::class, 'store'])->name('bookmarks.store');
+Route::delete('/chirps/{chirp}/bookmark', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
+
+//route for displaying bookmarks
+Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index');
 
 
 require __DIR__.'/auth.php';

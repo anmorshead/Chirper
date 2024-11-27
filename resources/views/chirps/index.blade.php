@@ -26,6 +26,18 @@
                                     <small class="text-sm text-gray-600"> &middot; {{ __('edited') }}</small>
                                 @endunless
                             </div>
+                            {{--bookmark button--}}
+                            <div>
+                                <button
+                                    class="bookmark-button"
+                                    data-chirp-id="{{ $chirp->id }}"
+                                    data-bookmarked="{{ $chirp->bookmarks->contains('user_id', auth()->id()) ? 'true' : 'false' }}">
+                                    <img
+                                        src="{{ $chirp->bookmarks->contains('user_id', auth()->id()) ? asset('bookmark-filled.png') : asset('bookmark.png') }}"
+                                        alt="Bookmark"
+                                        class="h-6 w-6">
+                                </button>
+                            </div>
                             @if ($chirp->user->is(auth()->user()))
                                 <x-dropdown>
                                     <x-slot name="trigger">
@@ -58,10 +70,12 @@
                         {{-- Comments Section --}}
                         <div class="mt-4">
                             <h3 class="text-sm font-bold">Comments:</h3>
+{{--                            loops through all comments in each chirp--}}
                             @foreach ($chirp->comments as $comment)
                                 <div class="mt-2">
                                     <span class="font-semibold">{{ $comment->user->name }}:</span>
                                     <span>{{ $comment->content }}</span>
+                                    {{--display date--}}
                                     <small class="text-gray-600">({{ $comment->created_at->diffForHumans() }})</small>
                                 </div>
                             @endforeach
@@ -94,25 +108,27 @@
                                 <span id="like-count-{{ $chirp->id }}">{{ $chirp->likes->count() }} Likes</span>
                             </div>
                         </div>
-
                     </div>
                 </div>
             @endforeach
         </div>
     </div>
-    {{-- JavaScript for AJAX --}}
+
+    {{-- Script for AJAX --}}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const likeButtons = document.querySelectorAll('.like-button');
 
+            // loops through each button and attaches click listener
             likeButtons.forEach(button => {
                 button.addEventListener('click', async () => {
+                    //extracts data
                     const chirpId = button.getAttribute('data-chirp-id');
                     const isLiked = button.getAttribute('data-liked') === 'true';
 
-                    // Define endpoint and method
-                    const url = `/chirps/${chirpId}/like`;
-                    const method = isLiked ? 'DELETE' : 'POST';
+                    //define endpoint dynamically
+                    const url = `/chirps/${chirpId}/like`; //like endpoint
+                    const method = isLiked ? 'DELETE' : 'POST'; //delete to unlike
 
                     try {
                         // Send AJAX request
@@ -123,11 +139,11 @@
                                 'Accept': 'application/json',
                             },
                         });
-
+                        //check response, extract data
                         if (response.ok) {
                             const data = await response.json();
 
-                            // Update the like count and button
+                            // Update the like count and button using response data
                             const likeCount = document.querySelector(`#like-count-${chirpId}`);
                             likeCount.textContent = `${data.likeCount} Likes`;
 
@@ -148,5 +164,45 @@
                 });
             });
         });
+        //bookmarks
+        document.addEventListener('DOMContentLoaded', () => {
+            const bookmarkButtons = document.querySelectorAll('.bookmark-button');
+
+            bookmarkButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const chirpId = button.getAttribute('data-chirp-id');
+                    const isBookmarked = button.getAttribute('data-bookmarked') === 'true';
+
+                    const url = `/chirps/${chirpId}/bookmark`; // Bookmark endpoint
+                    const method = isBookmarked ? 'DELETE' : 'POST'; // DELETE to remove bookmark
+
+                    try {
+                        const response = await fetch(url, {
+                            method: method,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                            },
+                        });
+
+                        if (response.ok) {
+                            const img = button.querySelector('img');
+                            if (isBookmarked) {
+                                img.src = '{{ asset("bookmark.png") }}';
+                                button.setAttribute('data-bookmarked', 'false');
+                            } else {
+                                img.src = '{{ asset("bookmark-filled.png") }}';
+                                button.setAttribute('data-bookmarked', 'true');
+                            }
+                        } else {
+                            console.error('Error toggling bookmark:', response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+
     </script>
 </x-app-layout>

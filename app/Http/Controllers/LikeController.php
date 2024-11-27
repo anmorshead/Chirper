@@ -18,6 +18,7 @@ class LikeController extends Controller
         $chirp->likes()->create([
             'user_id' => $request->user()->id,
         ]);
+        //return json response with ajax
         return response()->json(['likeCount' => $chirp->likes()->count()]);
     }
 
@@ -29,6 +30,7 @@ class LikeController extends Controller
         if ($like) {
             $like->delete();
         }
+//        return json response with ajax
         return response()->json(['likeCount' => $chirp->likes()->count()]);
     }
 }

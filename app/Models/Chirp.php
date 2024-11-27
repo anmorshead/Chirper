@@ -31,6 +31,12 @@ class Chirp extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+
 
 
 }
