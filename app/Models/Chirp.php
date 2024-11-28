@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Chirp extends Model
 {
-    public $fillable = [ 'message' ];
+    public $fillable = [ 'message', 'media_path' ];
 
     protected $dispatchesEvents = [
         'created' => ChirpCreated::class,

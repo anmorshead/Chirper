@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ChirpController extends Controller
@@ -38,9 +39,19 @@ class ChirpController extends Controller
         //create new chirp, save to database
         $validated = $request->validate([
             'message' => 'required|string|max:255',
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240', // Allow image/video uploads
         ]);
 
-        $request->user()->chirps()->create($validated);
+        // Handle file upload
+        $mediaPath="";
+        if ($request->hasFile('media')) {
+            $mediaPath = $request->file('media')->store('chirps', 'public'); // Store in the 'chirps' directory on the public disk
+        }
+
+        $request->user()->chirps()->create([
+            'message' => $validated['message'],
+            'media_path' => $mediaPath,
+        ]);
 
         return redirect(route('chirps.index'));
     }
@@ -74,9 +85,23 @@ class ChirpController extends Controller
 
         $validated = $request->validate([
             'message' => 'required|string|max:255',
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240', // Allow image/video updates
         ]);
 
-        $chirp->update($validated);
+        // Handle file upload if new media is provided
+        if ($request->hasFile('media')) {
+            // Delete the old file if it exists
+            if ($chirp->media_path) {
+                Storage::disk('public')->delete($chirp->media_path);
+            }
+
+            $chirp->media_path = $request->file('media')->store('chirps', 'public');
+        }
+
+        $chirp->update([
+            'message' => $validated['message'],
+            'media_path' => $chirp->media_path,
+        ]);
 
         return redirect(route('chirps.index'));
     }
@@ -87,6 +112,11 @@ class ChirpController extends Controller
     public function destroy(Chirp $chirp): RedirectResponse
     {
         Gate::authorize('delete', $chirp);
+
+        // Delete the associated media file if it exists
+        if ($chirp->media_path) {
+            Storage::disk('public')->delete($chirp->media_path);
+        }
 
         $chirp->delete();
 

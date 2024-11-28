@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8">
-        <form method="POST" action="{{ route('chirps.store') }}">
+        <form method="POST" action="{{ route('chirps.store') }}" enctype="multipart/form-data">
             @csrf
             <textarea
                 name="message"
@@ -8,8 +8,22 @@
                 class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
             >{{ old('message') }}</textarea>
             <x-input-error :messages="$errors->get('message')" class="mt-2" />
+            {{-- attach media--}}
+            <div class="mt-4">
+                <label for="media" class="block text-sm font-medium text-gray-700">{{ __('Attach Media') }}</label>
+                <input
+                    type="file"
+                    name="media"
+                    id="media"
+                    accept="image/*,video/*"
+                    class="block w-full text-sm text-gray-900 border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                />
+                <x-input-error :messages="$errors->get('media')" class="mt-2" />
+            </div>
+
             <x-primary-button class="mt-4">{{ __('Chirp') }}</x-primary-button>
         </form>
+
 
         <div class="mt-6 bg-white shadow-sm rounded-lg divide-y">
             @foreach ($chirps as $chirp)
@@ -66,6 +80,21 @@
                             @endif
                         </div>
                         <p class="mt-4 text-lg text-gray-900">{{ $chirp->message }}</p>
+
+                        {{-- Display media if present --}}
+                        @if ($chirp->media_path)
+                            <div class="mt-4">
+                                @if (Str::contains($chirp->media_path, ['.jpg', '.jpeg', '.png', '.gif']))
+                                    <img src="{{ asset('storage/' . $chirp->media_path) }}" alt="Media" class=" rounded-lg">
+                                @elseif (Str::contains($chirp->media_path, ['.mp4', '.mov', '.avi']))
+                                    <video controls class="w-full rounded-lg">
+                                        <source src="{{ asset('storage/' . $chirp->media_path) }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+
+                                    </video>
+                                @endif
+                            </div>
+                        @endif
 
                         {{-- Comments Section --}}
                         <div class="mt-4">
