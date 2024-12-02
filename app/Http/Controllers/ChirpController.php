@@ -39,7 +39,7 @@ class ChirpController extends Controller
         //create new chirp, save to database
         $validated = $request->validate([
             'message' => 'required|string|max:255',
-            'media' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240',
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240', //needs to be nullable
         ]);
 
         // Handle file upload
