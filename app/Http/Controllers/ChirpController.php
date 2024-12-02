@@ -39,13 +39,13 @@ class ChirpController extends Controller
         //create new chirp, save to database
         $validated = $request->validate([
             'message' => 'required|string|max:255',
-            'media' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240', // Allow image/video uploads
+            'media' => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi|max:10240',
         ]);
 
         // Handle file upload
         $mediaPath="";
         if ($request->hasFile('media')) {
-            $mediaPath = $request->file('media')->store('chirps', 'public'); // Store in the 'chirps' directory on the public disk
+            $mediaPath = $request->file('media')->store('chirps', 'public'); //store in the 'chirps' directory on the public disk
         }
 
         $request->user()->chirps()->create([

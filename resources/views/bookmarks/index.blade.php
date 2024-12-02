@@ -3,10 +3,12 @@
         <h1 class="text-2xl font-semibold mb-4">{{ __('Your Bookmarked Chirps') }}</h1>
 
         @if ($bookmarkedChirps->isEmpty())
+{{--            if user hasnt bookmarked any chirps yet--}}
             <p class="text-gray-600">{{ __('You haven’t bookmarked any chirps yet.') }}</p>
         @else
             <div class="bg-white shadow-sm rounded-lg divide-y">
                 @foreach ($bookmarkedChirps as $chirp)
+{{--                    iterates through each chirp in the bookmarked chirp collection--}}
                     <div class="p-6 flex space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 -scale-x-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -22,6 +24,20 @@
                                 </div>
                             </div>
                             <p class="mt-4 text-lg text-gray-900">{{ $chirp->message }}</p>
+
+                            {{-- Display media if present --}}
+                            @if ($chirp->media_path)
+                                <div class="mt-4">
+                                    @if (Str::contains($chirp->media_path, ['.jpg', '.jpeg', '.png', '.gif']))
+                                        <img src="{{ asset('storage/' . $chirp->media_path) }}" alt="Media" class="w-full max-w-sm h-auto rounded-lg">
+                                    @elseif (Str::contains($chirp->media_path, ['.mp4', '.mov', '.avi']))
+                                        <video controls class="w-full max-w-sm rounded-lg">
+                                            <source src="{{ asset('storage/' . $chirp->media_path) }}" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @endforeach
